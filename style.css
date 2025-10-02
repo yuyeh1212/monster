@@ -1,35 +1,57 @@
 @charset "UTF-8";
-html,
-body {
+* {
   margin: 0;
   padding: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #e55a54;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: "微軟正黑體", "Microsoft JhengHei", sans-serif;
+  box-sizing: border-box;
 }
 
-.pageLoading {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  top: 0;
+body {
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #e55a54 0%, #d94842 100%);
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #0c4475;
+  font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+  overflow: hidden;
+}
+
+.content-wrapper {
+  display: flex;
   flex-direction: column;
-  transition: opacity 0.5s 0.5s;
+  align-items: center;
+  gap: 30px;
 }
-.pageLoading.complete {
+
+.text-container {
+  text-align: center;
   opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s ease forwards 3.5s;
 }
-.pageLoading.complete .monster {
-  transform: scale(0.01) rotate(360deg);
+
+.monster-text {
+  color: white;
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: bold;
+  line-height: 1.3;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  margin-bottom: 10px;
+}
+
+.sub-text {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: clamp(16px, 2.5vw, 20px);
+  font-weight: normal;
+}
+
+.monsters-container {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+  justify-content: center;
+  opacity: 0;
+  animation: fadeIn 0.8s ease forwards 3.5s;
 }
 
 .monster {
@@ -38,111 +60,177 @@ body {
   background-color: #e55a54;
   border-radius: 20px;
   cursor: pointer;
-  margin: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   position: relative;
-  animation: jumping 0.8s infinite alternate;
+  animation: jumping 0.8s infinite alternate ease-in-out;
+  transition: transform 0.3s ease;
+  will-change: transform;
 }
-.monster .eye {
-  width: 40%;
-  height: 40%;
+
+.monster:hover {
+  transform: scale(1.1) !important;
+}
+
+.monster.blue {
+  background-color: #0c4475;
+  animation-delay: 0.4s;
+}
+
+.monster.blue .mouth,
+.monster.blue .eyeball {
+  background-color: #e55a54;
+}
+
+.monster::before,
+.monster::after {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 10px;
+  background-color: #fff;
+  border-radius: 10px;
+  top: -10px;
+}
+
+.monster::before {
+  left: 35%;
+  transform: rotate(45deg);
+}
+
+.monster::after {
+  right: 35%;
+  transform: rotate(-45deg);
+}
+
+.eye {
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background-color: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-bottom: 8px;
 }
-.monster .eyeball {
-  width: 50%;
-  height: 50%;
+
+.eyeball {
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background-color: #0c4475;
+  animation: eyemove 1.6s infinite alternate ease-in-out;
+  will-change: transform;
 }
-.monster .mouth {
-  width: 32%;
+
+.mouth {
+  width: 35px;
   height: 12px;
   border-radius: 12px;
   background-color: white;
-  margin-top: 15%;
 }
-.monster:before, .monster:after {
-  content: "";
-  display: block;
-  width: 20%;
+
+/* Loading Screen */
+.page-loading {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #0c4475 0%, #094066 100%);
+  flex-direction: column;
+  z-index: 1000;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.page-loading.complete {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.page-loading .monster {
+  transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.page-loading.complete .monster {
+  transform: scale(0.01) rotate(720deg);
+}
+
+.loading-bar-container {
+  width: 240px;
   height: 10px;
-  background-color: #fff;
-  border-radius: 10px;
-  position: absolute;
-  left: 50%;
-  top: -10px;
+  margin-top: 60px;
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
-.monster:before {
-  transform: translateX(-70%) rotate(45deg);
+
+.loading-bar {
+  background: linear-gradient(90deg, #e55a54 0%, #ff6b63 100%);
+  width: 0%;
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.05s linear;
+  box-shadow: 0 0 10px rgba(229, 90, 84, 0.5);
 }
-.monster:after {
-  transform: translateX(-30%) rotate(-45deg);
+
+.loading-text {
+  color: white;
+  margin-top: 20px;
+  font-size: 18px;
+  opacity: 0.8;
 }
-.monster,
-.monster * {
-  transition: 0.5s;
-}
-.monster.blue {
-  background-color: #0c4475;
-  animation-delay: 0.5s;
-}
-.monster.blue .mouth,
-.monster.blue .eyeball {
-  background-color: #e55a54;
-}
+
+/* Animations */
 @keyframes jumping {
-  50% {
-    top: 0;
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+  0% {
+    transform: translateY(0);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   }
   100% {
-    top: -50px;
-    box-shadow: 0px 120px 50px rgba(0, 0, 0, 0.2);
+    transform: translateY(-50px);
+    box-shadow: 0 60px 50px rgba(0, 0, 0, 0.15);
   }
 }
 @keyframes eyemove {
   0%, 10% {
-    transform: translate(50%);
+    transform: translateX(8px);
   }
   90%, 100% {
-    transform: translate(-50%);
+    transform: translateX(-8px);
   }
 }
-.monster .eyeball {
-  animation: eyemove 1.6s infinite alternate;
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
 }
-
-.loading {
-  width: 200px;
-  height: 8px;
-  margin-top: 80px;
-  border-radius: 5px;
-  background-color: #fff;
-  overflow: hidden;
-  transition: 0.5s;
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-.loading .bar {
-  background-color: #e55a54;
-  width: 0%;
-  height: 100%;
-}
-
-h2 {
-  color: white;
-  font-size: 40px;
-  margin-right: 50px;
-}
-
-h3 {
-  margin-top: 0;
-  opacity: 0.5;
-  color: white;
+/* Responsive */
+@media (max-width: 600px) {
+  .monsters-container {
+    gap: 20px;
+  }
+  .monster {
+    width: 90px;
+    height: 90px;
+  }
+  .eye {
+    width: 36px;
+    height: 36px;
+  }
+  .eyeball {
+    width: 18px;
+    height: 18px;
+  }
 }/*# sourceMappingURL=style.css.map */

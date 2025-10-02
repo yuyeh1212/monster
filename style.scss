@@ -1,162 +1,244 @@
-$colorOrange: #e55a54;
-$colorBlue: #0c4475;
-
-@mixin size($w, $h: $w) {
-  width: $w;
-  height: $h;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-@mixin flexCenter {
+body {
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #e55a54 0%, #d94842 100%);
   display: flex;
   justify-content: center;
   align-items: center;
+  font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+  overflow: hidden;
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  @include size(100%);
-  background-color: $colorOrange;
-  @include flexCenter;
-  font-family: "微軟正黑體", "Microsoft JhengHei", sans-serif;
-}
-
-.pageLoading {
-  position: fixed;
-  @include size(100%);
-  left: 0;
-  top: 0;
-  @include flexCenter;
-  background-color: $colorBlue;
+.content-wrapper {
+  display: flex;
   flex-direction: column;
-  transition: opacity 0.5s 0.5s;
+  align-items: center;
+  gap: 30px;
+}
 
-  &.complete {
-    opacity: 0;
-    .monster {
-      transform: scale(0.01) rotate(360deg);
-    }
-  }
+.text-container {
+  text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s ease forwards 3.5s;
+}
+
+.monster-text {
+  color: white;
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: bold;
+  line-height: 1.3;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  margin-bottom: 10px;
+}
+
+.sub-text {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: clamp(16px, 2.5vw, 20px);
+  font-weight: normal;
+}
+
+.monsters-container {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+  justify-content: center;
+  opacity: 0;
+  animation: fadeIn 0.8s ease forwards 3.5s;
 }
 
 .monster {
-  @include size(110px);
-  background-color: $colorOrange;
+  width: 110px;
+  height: 110px;
+  background-color: #e55a54;
   border-radius: 20px;
   cursor: pointer;
-  margin: 10px;
-  @include flexCenter;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   flex-direction: column;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  position: relative;
+  animation: jumping 0.8s infinite alternate ease-in-out;
+  transition: transform 0.3s ease;
+  will-change: transform;
+}
+
+.monster:hover {
+  transform: scale(1.1) !important;
+}
+
+.monster.blue {
+  background-color: #0c4475;
+  animation-delay: 0.4s;
+}
+
+.monster.blue .mouth,
+.monster.blue .eyeball {
+  background-color: #e55a54;
+}
+
+.monster::before,
+.monster::after {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 10px;
+  background-color: #fff;
+  border-radius: 10px;
+  top: -10px;
+}
+
+.monster::before {
+  left: 35%;
+  transform: rotate(45deg);
+}
+
+.monster::after {
+  right: 35%;
+  transform: rotate(-45deg);
+}
+
+.eye {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.eyeball {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: #0c4475;
+  animation: eyemove 1.6s infinite alternate ease-in-out;
+  will-change: transform;
+}
+
+.mouth {
+  width: 35px;
+  height: 12px;
+  border-radius: 12px;
+  background-color: white;
+}
+
+/* Loading Screen */
+.page-loading {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #0c4475 0%, #094066 100%);
+  flex-direction: column;
+  z-index: 1000;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.page-loading.complete {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.page-loading .monster {
+  transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.page-loading.complete .monster {
+  transform: scale(0.01) rotate(720deg);
+}
+
+.loading-bar-container {
+  width: 240px;
+  height: 10px;
+  margin-top: 60px;
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.loading-bar {
+  background: linear-gradient(90deg, #e55a54 0%, #ff6b63 100%);
+  width: 0%;
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.05s linear;
+  box-shadow: 0 0 10px rgba(229, 90, 84, 0.5);
+}
+
+.loading-text {
+  color: white;
+  margin-top: 20px;
+  font-size: 18px;
+  opacity: 0.8;
+}
+
+/* Animations */
+@keyframes jumping {
+  0% {
+    transform: translateY(0);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  }
+  100% {
+    transform: translateY(-50px);
+    box-shadow: 0 60px 50px rgba(0, 0, 0, 0.15);
+  }
+}
+
+@keyframes eyemove {
+  0%,
+  10% {
+    transform: translateX(8px);
+  }
+  90%,
+  100% {
+    transform: translateX(-8px);
+  }
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .monsters-container {
+    gap: 20px;
+  }
+
+  .monster {
+    width: 90px;
+    height: 90px;
+  }
 
   .eye {
-    @include size(40%);
-    border-radius: 50%;
-    background-color: #fff;
-    @include flexCenter;
+    width: 36px;
+    height: 36px;
   }
 
   .eyeball {
-    @include size(50%);
-    border-radius: 50%;
-    background-color: $colorBlue;
+    width: 18px;
+    height: 18px;
   }
-
-  .mouth {
-    @include size(32%, 12px);
-    border-radius: 12px;
-    background-color: white;
-    margin-top: 15%;
-  }
-
-  &:before,
-  &:after {
-    content: "";
-    display: block;
-    @include size(20%, 10px);
-    background-color: #fff;
-    border-radius: 10px;
-    position: absolute;
-    left: 50%;
-    top: -10px;
-  }
-
-  &:before {
-    transform: translateX(-70%) rotate(45deg);
-  }
-
-  &:after {
-    transform: translateX(-30%) rotate(-45deg);
-  }
-
-  box-shadow: 0px 10px 20px rgba(black, 0.2);
-
-  &,
-  * {
-    transition: 0.5s;
-  }
-
-  &.blue {
-    background-color: $colorBlue;
-    animation-delay: 0.5s;
-    .mouth,
-    .eyeball {
-      background-color: $colorOrange;
-    }
-  }
-
-  @keyframes jumping {
-    50% {
-      top: 0;
-      box-shadow: 0px 10px 20px rgba(black, 0.2);
-    }
-    100% {
-      top: -50px;
-      box-shadow: 0px 120px 50px rgba(black, 0.2);
-    }
-  }
-
-  @keyframes eyemove {
-    0%,
-    10% {
-      transform: translate(50%);
-    }
-    90%,
-    100% {
-      transform: translate(-50%);
-    }
-  }
-
-  position: relative;
-  animation: jumping 0.8s infinite alternate;
-
-  .eyeball {
-    animation: eyemove 1.6s infinite alternate;
-  }
-}
-
-.loading {
-  @include size(200px, 8px);
-  margin-top: 80px;
-  border-radius: 5px;
-  background-color: #fff;
-  overflow: hidden;
-  transition: 0.5s;
-
-  .bar {
-    background-color: $colorOrange;
-    @include size(0%, 100%);
-  }
-}
-
-h2 {
-  color: white;
-  font-size: 40px;
-  margin-right: 50px;
-}
-
-h3 {
-  margin-top: 0;
-  opacity: 0.5;
-  color: white;
 }
